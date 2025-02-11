@@ -17,7 +17,8 @@ class InitialUsersSeeder extends Seeder
     public function run(): void
     {
         $csvFile = storage_path('app') . DIRECTORY_SEPARATOR . 'usuarios.csv';
-        
+        $fixedPassword = Hash::make('User123');
+
         $usuarios = [];
 
         if (($handle = fopen($csvFile, 'r')) !== FALSE) {
@@ -48,7 +49,7 @@ class InitialUsersSeeder extends Seeder
                         'correo_electronico'    => $usuario['correo_electronico'],
                         'numero_nomina'         => $numero_nomina,
                         'tripulacion'           => $usuario['tripulacion'],
-                        'password'              => Hash::make('password') // fixed
+                        'password'              => $fixedPassword
                     ]);
 
                     $role = $usuario['rol'];
