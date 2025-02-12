@@ -30,7 +30,6 @@ class UsuarioRequest extends FormRequest
             'tripulacion'           => ['nullable'],
             'id_rol'                => ['required'],
             'numero_nomina'         => ['required', 'numeric'],
-            'password'              => ['required', 'confirmed', Password::min(8)]
         ];
 
         $id_usuario = $this->route('usuario');

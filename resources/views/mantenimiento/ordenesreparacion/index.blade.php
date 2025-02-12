@@ -28,16 +28,16 @@
                         </div>
                     </div>
 
-                    <table class="table table-sm table-bordered w-100 border-secondary" id="example" style="table-layout: fixed">
+                    <table class="table table-sm table-striped table-bordered w-100 border-secondary" id="example" style="table-layout: fixed">
                         <thead class="border-secondary">
                             <tr>
                                 <th scope="col" class="text-center">No. Orden</th>
+                                <th scope="col" class="text-center">Lider Prensas</th>
                                 <th scope="col" class="text-center">Prensa</th>
                                 <th scope="col" class="text-center">Número de Parte & Op</th>
                                 <th scope="col" class="text-center">Falla Principal</th>
                                 <th scope="col" class="text-center">Fecha Emisión</th>
-                                <th scope="col" class="text-center">F. Requiere Prod</th>
-                                <th scope="col" class="text-center">Lider Prensas</th>
+                                <th scope="col" class="text-center">Seguimienti</th>
                                 <th scope="col" class="text-center">Acciones</th>
                             </tr>
                         </thead>
@@ -47,7 +47,6 @@
         </div>
     </div>
     @include('mantenimiento.ordenesreparacion.formulario-show')
-    @include('mantenimiento.ordenesreparacion.formulario-nuevafalla')
     @include('mantenimiento.ordenesreparacion.formulario-cerrarOT')
     @include('mantenimiento.ordenesreparacion.offcanvas')
 </div>
@@ -85,6 +84,9 @@
                     width: '9%'
                 },
                 {
+                    data: 'falla_usuario_registro'
+                },
+                {
                     data: 'orden_estacion',
                     width: '9%',
                 },
@@ -105,16 +107,13 @@
                     width: '9%'
                 },
                 {
-                    data: 'falla_usuario_registro'
-                },
-                {
                     data: 'acciones',
                     orderable: false,
                     width: '9%'
                 },
             ],
             columnDefs: [{
-                targets: '_all',
+                targets: [0, 2, 3, 5, 6, 7],
                 className: 'text-center'
             }],
             processing: true,
@@ -129,13 +128,7 @@
                 }
             }))
         })
-
-        $(document).on('click', '.ordenfalla-create', (e) => {
-            this.dispatchEvent(new CustomEvent('ordenfalla-create', {
-                detail: datatable.row(e.target.closest('tr')).data()
-            }))
-        })
-
+        
         $(document).on('click', '.cerrar-OT', (e) => {
             const orden = datatable.row(e.target.closest('tr')).data();
 

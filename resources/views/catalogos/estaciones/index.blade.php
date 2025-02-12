@@ -50,7 +50,21 @@
 <script type="text/javascript">
     // Document ready...
     document.addEventListener('DOMContentLoaded', () => {
+        const now = new Date();
+
         const datatable = $('#example').DataTable({
+            layout: {
+                topStart: {
+                    buttons: [
+                        'pageLength',
+                        {
+                            extend: 'excelHtml5',
+                            autoFilter: true,
+                            title: 'Catalogo-Estaciones-' + now.toLocaleDateString()
+                        }
+                    ]
+                }
+            },
             ajax: {
                 url: route('catalogos.estacion.index')
             },

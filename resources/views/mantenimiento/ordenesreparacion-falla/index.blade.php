@@ -28,10 +28,20 @@
                         </div>
                     </div>
 
+                    <hr>
+
+                    @hasrole('Lider ToolRoom')
+                    <div>
+                        <button type="button" class="btn btn-success ordenfalla-create">
+                            + Falla
+                        </button>
+                    </div>
+                    @endhasrole
 
                     <table class="table table-sm table-striped table-bordered w-100 border-secondary" id="example" style="table-layout: fixed">
                         <thead class="border-secondary">
                             <tr>
+                                <th scope="col" class="text-center">No. Orden</th>
                                 <th scope="col" class="text-center">No. Falla</th>
                                 <th scope="col" class="text-center">Prensa</th>
                                 <th scope="col" class="text-center">Número de Parte & Op</th>
@@ -42,7 +52,7 @@
                                 <th scope="col" class="text-center">Emitida</th>
                                 <th scope="col" class="text-center">Programada</th>
                                 <th scope="col" class="text-center">Terminada</th>
-                                <th scope="col" class="text-center"></th>
+                                <th scope="col" class="text-center">Acciones</th>
                             </tr>
                         </thead>
                     </table>
@@ -52,6 +62,7 @@
     </div>
     @include('mantenimiento.ordenesreparacion-falla.formulario-show')
     @include('mantenimiento.ordenesreparacion-falla.formulario-programarfalla')
+    @include('mantenimiento.ordenesreparacion-falla.formulario-create')
 </div>
 @endsection
 @section('scripts')
@@ -63,41 +74,7 @@
     }
     
     document.addEventListener('DOMContentLoaded', () => {
-        const filtro_selected = () => $('input[name="filtro"]:checked').val()
-
-        const print_actions = (row) => {
-            const estatus_falla = row.falla_id_estatus;
-            const { id_orden, id_orden_falla, no_falla } = row;
-
-            let action = '';
-            
-            switch (parseInt(estatus_falla)) {
-                case 1:
-                    action = `
-                        <div>
-                            <button type="button" class="btn btn-sm fw-bolder btn-primary programar-OT">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stopwatch-fill" viewBox="0 0 16 16">
-                                    <path d="M6.5 0a.5.5 0 0 0 0 1H7v1.07A7.001 7.001 0 0 0 8 16a7 7 0 0 0 5.29-11.584l.013-.012.354-.354.353.354a.5.5 0 1 0 .707-.707l-1.414-1.415a.5.5 0 1 0-.707.707l.354.354-.354.354-.012.012A6.97 6.97 0 0 0 9 2.071V1h.5a.5.5 0 0 0 0-1zm2 5.6V9a.5.5 0 0 1-.5.5H4.5a.5.5 0 0 1 0-1h3V5.6a.5.5 0 1 1 1 0"/>
-                                </svg>
-                            </button>
-                        </div>
-                    `
-                    break;
-                case 2:
-                case 3:
-                    action = `
-                        <button type="button" class="btn fw-bold btn-sm btn-warning cerrar-falla" data-orden="${id_orden}" data-num-falla="${no_falla}" data-falla="${id_orden_falla}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
-                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                            </svg>
-                        </button>
-                    `
-                default:
-                    break;
-            }
-
-            return action;
-        }
+        const filtro_selected = () => $('input[name="filtro"]:checked').val();
 
         const datatable = $('#example').DataTable({
             ajax: {
@@ -112,6 +89,7 @@
             },
             processing: true,
             columns: [
+                { data: 'no_orden', width: '7%' },
                 {
                     data: 'no_falla',
                     width: '7%',
@@ -144,6 +122,7 @@
                 },
                 {
                     data: 'falla_falla',
+                    render: (data, type, row, meta) => `${row.falla_codigo_falla} - ${data}`
                 },
                 {
                     data: 'falla_usuario_registro',
@@ -169,16 +148,12 @@
                     width: '8%'
                 },
                 {
-                    data: null,
-                    width: '4%',
-                    render: (data, type, row, meta) => {
-                        if (row.es_lider_prensas) return '';
-                        return print_actions(row)
-                    }
+                    data: 'acciones',
+                    width: '8%',
                 },
             ],
             columnDefs: [{
-                targets: '_all',
+                targets: [0, 1, 2, 3, 6, 7, 8, 9, 10, 11],
                 className: 'text-center'
             }],
             ordering: false,
@@ -204,6 +179,7 @@
                     api.column(9).visible(1);
                     api.column(10).visible(0);
                 }
+
                 if (filtro == "T") {
                     api.column(6).visible(0);
                     api.column(7).visible(1);
@@ -214,6 +190,10 @@
                 }
             }
         });
+
+        $(document).on('click', '.ordenfalla-create', (e) => {
+            this.dispatchEvent(new CustomEvent('ordenfalla-create'))
+        })
 
         $('input[name="filtro"]').on('change', (e) => {
             datatable.ajax.reload();
@@ -252,7 +232,7 @@
             )
         })
 
-        $(window).on('programar-OT-success', (e) => {
+        $(window).on('programar-OT-success ordenfalla-success', (e) => {
             Swal.fire({
                 icon: 'success',
                 showConfirmButton: false,

@@ -78,14 +78,15 @@ class OrdenReparacionService
             mo.orden_num_fallas,
             mo.orden_f_inicio_reparacion,
             mo.orden_f_fin_reparacion,
-            p1.nombre AS orden_usuario_registro
+            p1.nombre AS orden_usuario_registro,
+            mo.orden_FORMA
         FROM
             v_mtto_ordenes   AS mo
             JOIN
                 dbo.usuarios AS p1
                     ON (mo.orden_id_usuario_registro = p1.id)
         WHERE
-            (mo.id_orden = 1)";
+            (mo.id_orden = ?)";
 
         return DB::selectOne($tsql, array($id_orden));
     }

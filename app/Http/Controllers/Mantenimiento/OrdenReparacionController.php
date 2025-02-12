@@ -53,30 +53,36 @@ class OrdenReparacionController extends Controller
                 ->editColumn('orden_fecha_emision', fn($row) => now()->parse($row->orden_fecha_emision)->format('Y-m-d H:i'))
                 ->addColumn('acciones', function($row) {
                     $orden_id_estatus = intval($row->orden_id_estatus);
+                    $fallas_abiertas  = intval($row->fallas_abiertas);
 
                     if (request()->user()->hasRole(Roles::LIDER_TOOLROOM->value)) {
                         if ($orden_id_estatus === 1)
-                            return <<< HTML
-                                <div>
-                                    <button type="button" class="btn btn-sm btn-success ordenfalla-create">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-window-plus" viewBox="0 0 16 16">
-                                            <path d="M2.5 5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1M4 5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1m2-.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
-                                            <path d="M0 4a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v4a.5.5 0 0 1-1 0V7H1v5a1 1 0 0 0 1 1h5.5a.5.5 0 0 1 0 1H2a2 2 0 0 1-2-2zm1 2h13V4a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1z"/>
-                                            <path d="M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0m-3.5-2a.5.5 0 0 0-.5.5v1h-1a.5.5 0 0 0 0 1h1v1a.5.5 0 0 0 1 0v-1h1a.5.5 0 0 0 0-1h-1v-1a.5.5 0 0 0-.5-.5"/>
-                                        </svg>
+                            if ($fallas_abiertas === 0)
+                                return <<< HTML
+                                    <div>
+                                        <button type="button" style="width: 55px;" class="btn btn-sm btn-warning cerrar-OT">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                            </svg>
+                                        </button> 
+                                    </div>
+                                HTML;
+                            else
+                                return <<< HTML
+                                    <button type="button" class="btn btn-link text-decoration-none btn-sm">
+                                        <i class="bi bi-reception-3"></i> Reparando...
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-warning cerrar-OT">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
-                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                                        </svg>
-                                    </button> 
-                                </div>
-                            HTML;
+                                HTML;
                         
                         if ($orden_id_estatus === 2)
                             return <<< HTML
-                                <span class="text-secondary">Esperando confirmación</span>
+                                <button type="button" class="btn btn-link text-decoration-none btn-sm">
+                                    <i class="bi bi-clock-history"></i>
+                                </button>
                             HTML;
+                        
+                        if ($orden_id_estatus === 3)
+                            return '<span class="text-success">OK</span>';
                     }
 
                     if (request()->user()->hasRole(Roles::LIDER_PRENSAS->value)) {
@@ -95,10 +101,7 @@ class OrdenReparacionController extends Controller
                 ->toJson();
         }
 
-        return view('mantenimiento.ordenesreparacion.index', [
-            'fallas'        => collect($this->falla_service->consultar(estatus: true))->select(['id_falla', 'codigo', 'falla']),
-            'causas_fallas' => collect($this->causa_falla_service->consultar(estatus: true))->select('id_causa', 'codigo', 'causa')
-        ]);
+        return view('mantenimiento.ordenesreparacion.index');
     }
 
     /**

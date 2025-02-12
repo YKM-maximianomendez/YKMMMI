@@ -19,6 +19,8 @@ class OrdenesReparacionFallasController extends Controller
                     @falla_fecha_captura_fin	= ?,
                     @falla_id_falla			    = ?,
                     @falla_id_causa		        = ?,
+                    @orden_id_estacion	        = ?,
+                    @orden_id_numeroparte       = ?,
                     @falla_id_turno				= ?
                 SQL;
 
@@ -27,13 +29,15 @@ class OrdenesReparacionFallasController extends Controller
                     request()->input('falla_fecha_captura_fin', now()->endOfMonth()->toDateString()),
                     request()->input('falla_id_falla'),
                     request()->input('falla_id_causa'),
+                    request()->input('orden_id_estacion'),
+                    request()->input('orden_id_numeroparte'),
                     request()->input('falla_id_turno')
                 ));
 
                 return datatables($resultset)
                     ->toJson();
             } catch (Throwable $th) {
-                dd($th);
+                return response()->json(['message' => $th->getMessage()], 500);
             }
         }
 

@@ -46,7 +46,21 @@
 @section('scripts')
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', () => {
+        const now = new Date();
+
         const datatable = $('#example').DataTable({
+            layout: {
+                topStart: {
+                    buttons: [
+                        'pageLength',
+                        {
+                            extend: 'excelHtml5',
+                            autoFilter: true,
+                            title: 'Catalogo-ClasificacionesFalla-' + now.toLocaleDateString()
+                        },
+                    ]
+                }
+            },
             ajax: {
                 url: route('catalogos.clasificacion-falla.index')
             },

@@ -87,6 +87,19 @@
                                 <input type="text" class="form-control" id="orden_usuario_registro" x-model="orden.orden_usuario_registro" placeholder="Pzas Requeridas" disabled>
                             </div>
                         </div>
+                        <template x-if="parseInt(orden.orden_id_estatus) !== 1">
+                            <div class="row mb-1">
+                                <label for="orden_usuario_registro" class="col-md-6 col-form-label text-end">FORMA:</label>
+                                <div class="col-md-6 d-flex align-items-center">
+                                    <template x-if="parseInt(orden.orden_FORMA) === 1">
+                                        <a :href="route('download-FORMA', orden.id_orden)" target="_blank" rel="noopener noreferrer">Descargar Formato</a>
+                                    </template>
+                                    <template x-if="parseInt(orden.orden_FORMA) === 0">
+                                        <button type="button" class="btn btn-primary">Generar</button>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                 </div>
 
@@ -101,7 +114,7 @@
                 </nav>
                 <div class="tab-content" id="nav-tabContent">
                     <div class="tab-pane fade show active" id="nav-fallas" role="tabpanel" aria-labelledby="nav-fallas-tab" tabindex="0">
-                        <table class="table table-sm table-bordered border-secondary w-100" id="tbl-1" style="table-layout: fixed">
+                        <table class="table table-striped table-sm table-bordered border-secondary w-100" id="tbl-1" style="table-layout: fixed">
                             <thead class="border-secondary">
                                 <tr>
                                     <th scope="col" class="text-center">ID</th>
@@ -116,7 +129,7 @@
                         </table>
                     </div>
                     <div class="tab-pane fade" id="nav-evidencias" role="tabpanel" aria-labelledby="nav-evidencias-tab" tabindex="0">
-                        <table class="table table-sm border-secondary table-bordered w-100" id="tbl-2" style="table-layout: fixed">
+                        <table class="table table-striped table-sm border-secondary table-bordered w-100" id="tbl-2" style="table-layout: fixed">
                             <thead class="border-secondary">
                                 <tr>
                                     <th scope="col" class="text-center">Nombre Archivo</th>
@@ -129,7 +142,7 @@
                         </table>
                     </div>
                     <div class="tab-pane fade" id="nav-materialesutilizados" role="tabpanel" aria-labelledby="nav-materialesutilizados-tab" tabindex="0">
-                        <table class="table table-sm table-bordered border-secondary w-100" id="tbl-3" style="table-layout: fixed">
+                        <table class="table table-striped table-sm table-bordered border-secondary w-100" id="tbl-3" style="table-layout: fixed">
                             <thead class="border-secondary">
                                 <tr>
                                     <th scope="col" class="text-center">ID</th>

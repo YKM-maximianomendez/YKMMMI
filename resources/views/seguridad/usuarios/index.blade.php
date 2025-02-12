@@ -89,7 +89,7 @@
                 {
                     data: null,
                     orderable: false,
-                    render: () => {
+                    render: (data, type, row, meta) => {
                         return `
                                 <div>
                                     <span role="button" class="usuario-edit me-2">
@@ -98,6 +98,7 @@
                                             <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
                                         </svg>
                                     </span>
+                                    ${row.restablecer_password}
                                 </div>
                             `
                     },
@@ -123,9 +124,7 @@
         })
 
         $(window).on('usuario-success', (e) => {
-            const {
-                message
-            } = e.detail;
+            const { message } = e.detail;
 
             Swal.fire({
                 icon: 'success',

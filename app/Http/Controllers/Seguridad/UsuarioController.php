@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Seguridad;
 
 use App\Actions\Seguridad\ActualizarUsuarioAction;
 use App\Actions\Seguridad\CrearUsuarioAction;
+use App\Enums\Roles;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Seguridad\UsuarioRequest;
 use App\Services\Seguridad\UsuarioService;
@@ -19,8 +20,7 @@ class UsuarioController extends Controller
     public function __construct(
         private readonly UsuarioService $usuario_service,
         private readonly TripulacionService $tripulacion_service
-    ) 
-    {
+    ) {
         $this->middleware('auth');
     }
 
@@ -33,6 +33,18 @@ class UsuarioController extends Controller
             $resultset = $this->usuario_service->consultar();
 
             return datatables($resultset)
+                ->addColumn('restablecer_password', function ($row) {
+                    if (request()->user()->hasRole(Roles::ADMINISTRADOR_IT->value)) {
+                        return <<< HTML
+                            <span role="button" class="restablecer-password">
+                                <i class="fas fa-key"></i>
+                            </span>
+                        HTML;
+                    }
+
+                    return "";
+                })
+                ->escapeColumns('restablecer_password')
                 ->toJson();
         }
 

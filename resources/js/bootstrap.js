@@ -17,6 +17,17 @@ import dt from 'datatables.net-bs5';
 
 window.DataTable = dt;
 
+import jszip from 'jszip';
+import pdfmake from 'pdfmake';
+window.JSZip = jszip;
+window.pdfmake = pdfmake;
+
+import 'datatables.net-buttons-bs5';
+import 'pdfmake/build/vfs_fonts';
+import 'datatables.net-buttons/js/buttons.html5.min.js';
+import 'datatables.net-buttons/js/buttons.print.min.js';
+import 'datatables.net-buttons/js/buttons.colVis.min.js';
+
 /**
  * Swal2
  */

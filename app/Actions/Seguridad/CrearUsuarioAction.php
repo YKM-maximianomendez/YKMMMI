@@ -4,6 +4,7 @@ namespace App\Actions\Seguridad;
 
 use App\Models\User;
 use App\Services\Seguridad\RolService;
+use App\Services\Seguridad\UsuarioService;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
@@ -18,9 +19,9 @@ class CrearUsuarioAction
             'correo_electronico'    => $data['correo_electronico'],
             'numero_nomina'         => $data['numero_nomina'],
             'tripulacion'           => $data['tripulacion'],
-            'password'              => Hash::make('password')
+            'password'              => Hash::make(UsuarioService::DEFAULT_PASSWORD)
         ));
-        
+
         $usuario = User::findOrFail($id);
 
         $this->rol_service->revokeRoles($usuario->id);

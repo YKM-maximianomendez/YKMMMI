@@ -35,7 +35,7 @@
                                 @enderror
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary fw-bold w-100">Actualizar contraseña</button>
+                        <button type="submit" class="btn btn-primary fw-bold w-100">Actualizar</button>
                     </form>
                 </div>
             </div>

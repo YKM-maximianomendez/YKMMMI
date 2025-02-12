@@ -1,15 +1,30 @@
-<div x-data="ordenfallaForm" x-bind="listeners" class="modal fade" id="modal-ordenfalla" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-ordenfallaLabel" aria-hidden="true">
+<div x-data="ordenfallaForm" x-bind="listeners" class="modal fade" id="modal-create" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-createLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <form @submit.prevent="submit($el)">
             <div class="modal-content">
                 <div class="modal-header py-2">
-                    <h1 class="modal-title fs-5" id="modal-ordenfallaLabel" x-text="modal.title"></h1>
+                    <h1 class="modal-title fs-5" id="modal-createLabel" x-text="modal.title"></h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="row mb-3 justify-content-end">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <label for="id_orden" class="col-sm-4 col-form-label">Orden de reparación:</label>
+                                <div class="col-sm-8">
+                                <select x-model="id_orden" class="form-select" id="id_orden" name="id_orden">
+                                    <option value="">Selecciona una opción</option>
+                                    <template x-for="item in ordenes" :key="item.id_orden">
+                                        <option :value="item.id_orden" x-text="item.no_orden"></option>
+                                    </template>
+                                </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="falla-tab" data-bs-toggle="tab" data-bs-target="#falla-tab-pane" type="button" role="tab" aria-controls="falla-tab-pane" aria-selected="true">Nueva Falla</button>
+                            <button class="nav-link active" id="falla-tab" data-bs-toggle="tab" data-bs-target="#falla-tab-pane" type="button" role="tab" aria-controls="falla-tab-pane" aria-selected="true">Falla</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="evidencias-tab" data-bs-toggle="tab" data-bs-target="#evidencias-tab-pane" type="button" role="tab" aria-controls="evidencias-tab-pane" aria-selected="false">Adjuntar Evidencias</button>
@@ -19,14 +34,14 @@
                         <div class="tab-pane fade show active" id="falla-tab-pane" role="tabpanel" aria-labelledby="falla-tab" tabindex="0">
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                <label for="id_falla" class="form-label fw-bold">Falla:</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-exclamation-triangle"></i></span>
-                                    <select
-                                        id="id_falla"
-                                        name="id_falla"
-                                        class="form-select"
-                                        x-data="{
+                                    <label for="id_falla" class="form-label fw-bold">Falla:</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-exclamation-triangle"></i></span>
+                                        <select
+                                            id="id_falla"
+                                            name="id_falla"
+                                            class="form-select"
+                                            x-data="{
                                             init() {
                                                 const select = $($el).select2({
                                                     theme: 'bootstrap-5',
@@ -39,14 +54,13 @@
                                                 });
                                             }
                                         }"
-                                        required
-                                    >
-                                        <option selected value="">Selecciona una falla</option>
-                                        @foreach($fallas as $falla)
-                                        <option value="{{ $falla['id_falla'] }}">{{ $falla['codigo'] . ' - ' . $falla['falla'] }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                            required>
+                                            <option selected value="">Selecciona una falla</option>
+                                            @foreach($fallas as $falla)
+                                            <option value="{{ $falla['id_falla'] }}">{{ $falla['codigo'] . ' - ' . $falla['falla'] }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="id_causa" class="form-label fw-bold">Causa Falla:</label>
@@ -70,8 +84,7 @@
                                                 }
                                             }"
                                             @reset.window="$($el).val(null).trigger('change')"
-                                            required
-                                        >
+                                            required>
                                             <option selected value="">Selecciona una causa de falla</option>
                                             @foreach($causas_fallas as $causa)
                                             <option value="{{ $causa['id_causa'] }}">{{ $causa['codigo'] . ' - ' . $causa['causa'] }}</option>
@@ -85,20 +98,19 @@
                                         name="observaciones"
                                         id="obsservaciones"
                                         rows="3"
-                                        class="form-control"
-                                    ></textarea>
+                                        class="form-control"></textarea>
                                 </div>
                             </div>
                         </div>
                         <div class="tab-pane fade" id="evidencias-tab-pane" role="tabpanel" aria-labelledby="evidencias-tab" tabindex="0">
                             <div class="row g-3">
-                                
+
                                 <div class="alert alert-warning" role="alert">
                                     <i class="fas fa-exclamation-triangle"></i> Recuerda que solo se permiten subir <strong>3 archivos</strong> y que no superen cada uno los <strong>5 MB</strong> de tamaño.
                                 </div>
 
                                 <div class="row mt-3">
-                                    <label for="evidencia" class="col-sm-5 col-form-label fw-bold">Selecciona un archivo:</label>
+                                    <label for="evidencia" class="col-sm-5 col-form-label fw-bold">Archivo:</label>
                                     <div class="col-sm-7">
                                         <input type="file" name="evidencia" id="evidencia" class="form-control" x-ref="file" @change="agregar($el)">
                                     </div>
@@ -119,7 +131,7 @@
                     </div>
                 </div>
                 <div class="modal-footer p-1 justify-content-center">
-                    <button type="submit" class="btn btn-success fw-bold" :disabled="request.isProcessing">
+                    <button type="submit" class="btn btn-success fw-bold" :disabled="request.isProcessing || id_orden===null">
                         <i class="fas fa-save"></i> Guardar
                     </button>
                 </div>
@@ -130,15 +142,14 @@
 @push('scripts')
 <script type="text/javascript">
     document.addEventListener('alpine:init', () => {
-        const modal = new Modal(document.getElementById('modal-ordenfalla'));
+        const modal = new Modal(document.getElementById('modal-create'));
 
         modal._element.addEventListener('hidden.bs.modal', () => {
             this.dispatchEvent(new CustomEvent('ordenfalla-clear'))
         })
 
         const datatable = $('#tbl-evidencias').DataTable({
-            columns: [
-                {
+            columns: [{
                     data: 'name'
                 },
                 {
@@ -161,9 +172,10 @@
                 },
             ],
             ordering: false,
-            columnDefs: [
-                { targets: [1, 2], className: 'text-center' }
-            ]
+            columnDefs: [{
+                targets: [1, 2],
+                className: 'text-center'
+            }]
         })
 
         $('#tbl-evidencias tbody').on('click', '.evidencia-delete', function() {
@@ -178,6 +190,8 @@
                 isProcessing: false,
                 url: null
             },
+            ordenes: [],
+            queriyng_ordenes: false,
             formulario: {
                 observaciones: null,
                 id_falla: null,
@@ -229,12 +243,24 @@
             get evidencias() {
                 return datatable.rows().data().toArray();
             },
+            consultar_ordenes() {
+                axios.get(route('mantenimiento.ordenesreparacion-abiertas'))
+                    .then(response => {
+                        this.ordenes = response.data;
+                    })
+                    .catch(e => {
+                        console.log(e)
+                    })
+                    .finally(() => {
+
+                    })
+            },
             submit(form) {
                 this.resetErrors();
 
                 const formData = new FormData(form);
                 formData.append('id_orden', this.id_orden)
-                
+
                 if (this.evidencias.length > 0) {
                     this.evidencias.forEach(file => {
                         formData.append('evidencias[]', file.file)
@@ -249,7 +275,10 @@
                         this.$dispatch('ordenfalla-success')
                     })
                     .catch(e => {
-                        const { errorMessage, validationErrors } = handleErrors(e)
+                        const {
+                            errorMessage,
+                            validationErrors
+                        } = handleErrors(e)
                         this.error = errorMessage;
                         this.errors = validationErrors;
                     })
@@ -258,11 +287,11 @@
                     })
             },
             listeners: {
-                ['@ordenfalla-create.window']({ detail }) {
-                    this.id_orden = detail.id_orden;
-                    this.modal.title = `${ detail.no_orden } -  Nueva falla`
+                ['@ordenfalla-create.window']({detail}) {
+                    this.modal.title = `Nueva falla`
                     this.request.url = route('mantenimiento.ordenesreparacion-falla.store')
 
+                    this.consultar_ordenes();
                     modal.show();
                 },
                 ['@ordenfalla-clear.window']() {

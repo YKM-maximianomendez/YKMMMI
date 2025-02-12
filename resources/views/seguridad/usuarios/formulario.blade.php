@@ -73,40 +73,13 @@
                                 <div class="invalid-feedback fw-bolder" x-text="errors.correo_electronico[0]"></div>
                             </template>
                         </div>
-                        <div class="col-6">
-                            <label for="password" class="form-label fw-bold">Contraseña:</label>
-                            <div class="input-group">
-                                <div class="input-group-text"><i class="fas fa-lock"></i></div>
-                                <input
-                                    type="password"
-                                    class="form-control"
-                                    :class="!errors.password || 'is-invalid'"
-                                    id="password"
-                                    name="password"
-                                    x-model="formulario.password"
-                                >
+                        <template x-if="!request.isEdit">
+                            <div class="col-md-12">
+                                <div class="alert alert-info mb-0" role="alert">
+                                    La contraseña por defecto es: <strong>User123</strong>.
+                                </div>
                             </div>
-                            <template x-if="errors.password">
-                                <div class="invalid-feedback fw-bolder" x-text="errors.password[0]"></div>
-                            </template>
-                        </div>
-                        <div class="col-6">
-                        <label for="password" class="form-label fw-bold">Contraseña (confirmar):</label>
-                            <div class="input-group">
-                                <div class="input-group-text"><i class="fas fa-lock"></i></div>
-                                <input
-                                    type="password"
-                                    class="form-control"
-                                    :class="!errors.password_confirmation || 'is-invalid'"
-                                    id="password_confirmation"
-                                    name="password_confirmation"
-                                    x-model="formulario.password_confirmation"
-                                >
-                            </div>
-                            <template x-if="errors.password_confirmation">
-                                <div class="invalid-feedback fw-bolder" x-text="errors.password_confirmation[0]"></div>
-                            </template>
-                        </div>
+                        </template>
                         <div class="col-8">
                             <label for="id_rol" class="form-label fw-bold">Rol:</label>
                             <div class="input-group">
@@ -217,10 +190,7 @@
                         window.dispatchEvent(successEvent(response.data.message ?? "Operación realizada con éxito."))
                     })
                     .catch(e => {
-                        const {
-                            errorMessage,
-                            validationErrors
-                        } = handleErrors(e);
+                        const { errorMessage, validationErrors } = handleErrors(e);
                         
                         this.error = errorMessage;
                         this.errors = validationErrors;
@@ -252,12 +222,8 @@
                     this.prepareForm("Nuevo Usuario", route("seguridad.usuarios.store"), false);
                     modal.show();
                 },
-                ['@usuario-edit.window']({
-                    detail
-                }) {
-                    const {
-                        data
-                    } = detail;
+                ['@usuario-edit.window']({detail}) {
+                    const {data} = detail;
 
                     this.prepareForm("Editar Usuario: " + data.numero_nomina, route('seguridad.usuarios.update', [data.id]), true);
                     this.fill(data);

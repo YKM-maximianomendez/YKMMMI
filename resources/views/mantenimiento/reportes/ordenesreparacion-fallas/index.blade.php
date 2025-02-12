@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('styles')
 <style>
-    table.dataTable td {
+    table.dataTable td, th {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -30,16 +30,24 @@
             <table class="table table-sm table-striped table-bordered w-100 border-secondary" id="example">
                 <thead class="table-secondary border-secondary">
                     <tr>
+                        <th scope="col" class="text-center">No. Orden</th>
                         <th scope="col" class="text-center">No. Falla</th>
                         <th scope="col" class="text-center">Tipo</th>
+                        <th scope="col" class="text-center">Usuario Emite</th>
                         <th scope="col" class="text-center">Fecha Emisión</th>
                         <th scope="col" class="text-center">Prensa</th>
                         <th scope="col" class="text-center">Número de Parte & Op</th>
-                        <th scope="col" class="text-center">Falla General</th>
-                        <th scope="col" class="text-center">Causa</th>
+                        <th scope="col" class="text-center">Falla</th>
+                        <th scope="col" class="text-center">Causa Falla</th>
                         <th scope="col" class="text-center">Tiempo HH Estimado</th>
                         <th scope="col" class="text-center">Tiempo HH Real</th>
-                        <th scope="col" class="text-center">Turno Reporte</th>
+                        <th scope="col" class="text-center">Estatus Orden</th>
+                        <th scope="col" class="text-center">Estatus</th>
+                        <th scope="col" class="text-center">Fecha Recepción</th>
+                        <th scope="col" class="text-center">Fecha Programación</th>
+                        <th scope="col" class="text-center">Fecha Termino</th>
+                        <th scope="col" class="text-center">Turno</th>
+                        <th scope="col" class="text-center">Observaciones</th>
                     </tr>
                 </thead>
             </table>
@@ -61,6 +69,14 @@
         {
             id: 'id_turno',
             label: 'Turno'
+        },
+        {
+            id: 'id_estacion',
+            label: 'Estación'
+        },
+        {
+            id: 'id_numeroparte',
+            label: 'Número de Parte'
         },
         {
             id: 'fecha_captura_inicio',
@@ -117,24 +133,42 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        const now = new Date();
+
         const datatable = $('#example').DataTable({
+            layout: {
+                topStart: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            autoFilter: true,
+                            title: 'Reporte-Fallas-' + now.toLocaleDateString()
+                        },
+                        'colvis'
+                    ]
+                }
+            },
             ajax: {
                 url: '',
                 dataSrc: 'data',
                 data: function(d) {
                     d.falla_id_falla = $('#id_falla').val();
                     d.falla_id_causa = $('#id_causa').val();
+                    d.orden_id_estacion = $('#id_estacion').val();
+                    d.orden_id_numeroparte = $('#id_numeroparte').val();
                     d.falla_fecha_captura_inicio = $('#fecha_captura_inicio').val();
                     d.falla_fecha_captura_fin = $('#fecha_captura_fin').val();
-                    d.falla_id_turno = null
+                    d.falla_id_turno = $('#id_turno').val();
                 }
             },
             processing: true,
             responsive: true,
             scrollX: true,
             columns: [
+                { data: 'no_orden' },
                 { data: 'no_falla' },
                 { data: 'falla_tipo', render: (data) => data === 'U' ? 'Unica' : 'Adicional' },
+                { data: 'falla_usuario_registro' },
                 { data: 'falla_fecha_captura' },
                 { data: 'orden_estacion' },
                 {
@@ -156,7 +190,25 @@
                     data: 'falla_tiempo_hh_real'
                 },
                 {
+                    data: 'orden_estatus'
+                },
+                {
+                    data: 'falla_estatus'
+                },
+                {
+                    data: 'falla_fecha_recepcion'
+                },
+                {
+                    data: 'falla_fecha_programacion'
+                },
+                {
+                    data: 'falla_fecha_termino'
+                },
+                {
                     data: 'falla_turno'
+                },
+                {
+                    data: 'falla_observaciones'
                 },
             ],
             drawCallback: function() {
@@ -164,12 +216,13 @@
                 $('#legend').text(generateLegend())
             },
             columnDefs: [{
-                targets: '_all',
+                targets: [0, 1, 2, 4, 9, 10, 11, 12, 13, 14, 15],
                 className: 'text-center'
             }]
         })
 
-        $(document).on('click', '.search', () => {
+        $(document).on('submit', '#filter', (e) => {
+            e.preventDefault();
             reload_datatable(datatable);
         })
 

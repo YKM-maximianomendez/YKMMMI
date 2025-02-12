@@ -47,7 +47,21 @@
 @section('scripts')
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', () => {
+        const now = new Date();
+
         const datatable = $('#example').DataTable({
+            layout: {
+                top1Start: {
+                    buttons: [
+                        'pageLength',
+                        {
+                            extend: 'excelHtml5',
+                            autoFilter: true,
+                            title: 'Catalogo-CausasFallas-' + now.toLocaleDateString()
+                        },
+                    ]
+                }
+            },
             ajax: {
                 url: route('catalogos.causa-falla.index')
             },

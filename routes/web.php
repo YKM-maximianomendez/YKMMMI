@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Files\DownloadEvidenciaController;
 use App\Http\Controllers\Files\DownloadFORMAController;
 use App\Http\Controllers\Mantenimiento\KioscoReparaciones\ConsultarReparacionesPendientesController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Mantenimiento\KioscoReparaciones\ResumenReparacionContr
 use App\Http\Controllers\Mantenimiento\KioscoReparaciones\TerminarActividadReparacionController;
 use App\Http\Controllers\Mantenimiento\OrdenReparacion\CerrarOrdenReparacionController;
 use App\Http\Controllers\Mantenimiento\OrdenReparacion\ConfirmarCierreOrdenReparacionController;
+use App\Http\Controllers\Mantenimiento\Ordenreparacion\OrdenesAbiertasController;
 use App\Http\Controllers\Mantenimiento\OrdenReparacionFalla\FallasProgramadasController;
 use App\Http\Controllers\Shared\AboutSystemController;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +20,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/password/change', [ChangePasswordController::class, 'showChangePasswordForm'])->name('password.change');
+Route::post('/password/change', [ChangePasswordController::class, 'changePassword']);
 
 Auth::routes(['register' => false, 'reset' => false]);
 
@@ -56,11 +61,7 @@ Route::prefix('mantenimiento')->as('mantenimiento.')
         Route::get('/kiosco-reparaciones/resumen-reparacion/{id_orden_falla}', ResumenReparacionController::class)->name('kiosco-reparaciones.resumen-reparacion');
 
         Route::get('/ordenesreparacion-fallas/programadas', FallasProgramadasController::class)->name('ordenesprogramacion-fallas.programadas');
-        
-        Route::prefix('tablero')->as('tablero.')
-            ->group(function () {
-                Route::get('/control-correctivos', \App\Http\Controllers\Mantenimiento\Tablero\ControlCorrectivosController::class)->name('control-correctivos.index');
-            });
+        Route::get('/ordenesreparacion-abiertas', OrdenesAbiertasController::class)->name('ordenesreparacion-abiertas');
 
         Route::prefix('reportes')->as('reportes.')
             ->group(function () {
@@ -73,6 +74,11 @@ Route::prefix('mantenimiento')->as('mantenimiento.')
                         Route::get('/', [\App\Http\Controllers\Mantenimiento\Reportes\OrdenesReparacionFallasController::class, 'index'])->name('index');
                     });
             });
+    });
+
+Route::prefix('mantenimiento/tablero')->as('mantenimiento.tablero.')
+    ->group(function () {
+        Route::get('/control-correctivos', \App\Http\Controllers\Mantenimiento\Tablero\ControlCorrectivosController::class)->name('control-correctivos.index');
     });
 
 // 3. Seguridad
